@@ -182,7 +182,7 @@ def plot_numerical_variable(
     nbins: int,
     nbins_round_2: Optional[dict] = None,
     export: bool = False,
-):
+) -> None:
 
     size = np.ediff1d(bins)[0]
     min_hist = np.min(bins)
