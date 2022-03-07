@@ -2,6 +2,12 @@
 
 La libreria `target_describe` es un complemento para la visualizacion de la relacion entre la variable objetivo y las variables para los problemas de machine learning, más allá de una matriz de correlación.
 
+# Instalacion
+
+```
+pip install target-describe
+```
+
 # Modos disponibles
 
 Por el momento solo soporta problemas de clasificación binaria, poco a poco soportará problemas de regresión y clasificación multiple
@@ -37,4 +43,5 @@ df = pd.read_csv(
 
 td = targetDescribe(df,"Survived", problem="binary_classification")
 td.all_associations(export=True)
+
 ```
