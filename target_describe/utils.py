@@ -1,6 +1,4 @@
-from turtle import color
 from typing import Optional
-from matplotlib import colors, markers
 import pandas as pd
 import numpy as np
 from plotly.offline import init_notebook_mode, iplot
@@ -28,7 +26,8 @@ def calculate_distribution(
 
     df = get_variable_and_target(df, variable, target_name)
 
-    dummy_names = [target_name + "_" + str(dummy) for dummy in df[target_name].unique()]
+    dummy_names = [target_name + "_" +
+                   str(dummy) for dummy in df[target_name].unique()]
     target_value_described = target_name + "_" + target_value_described
     df = pd.get_dummies(data=df, columns=[target_name])
     df = df.groupby(by=variable)[dummy_names].sum()
@@ -69,7 +68,8 @@ def sample_and_get_distribution(
     random_state: Optional[int] = None,
 ) -> pd.DataFrame:
     df = get_variable_and_target(df, variable, target_name=target_name)
-    dummy_names = [target_name + "_" + str(dummy) for dummy in df[target_name].unique()]
+    dummy_names = [target_name + "_" +
+                   str(dummy) for dummy in df[target_name].unique()]
     target_value_described = target_name + "_" + target_value_described
     df = pd.get_dummies(data=df, columns=[target_name])
     df = df.groupby(by=variable)[dummy_names].sum()
@@ -101,7 +101,8 @@ def calculate_bins(
     nbins: int,
 ):
     df = get_variable_and_target(df, variable, target_name)
-    dummy_names = [target_name + "_" + str(dummy) for dummy in df[target_name].unique()]
+    dummy_names = [target_name + "_" +
+                   str(dummy) for dummy in df[target_name].unique()]
     dummy_dct = {dummy_name: "sum" for dummy_name in dummy_names}
     target_value_described = target_name + "_" + target_value_described
     df = pd.get_dummies(data=df, columns=[target_name])
@@ -165,7 +166,8 @@ def plot_variable(
         fig.write_html(f"{variable_name+'_'+target_value_described}.html")
 
     if not export:
-        init_notebook_mode(connected=True)  # initiate notebook for offline plot
+        # initiate notebook for offline plot
+        init_notebook_mode(connected=True)
         iplot(fig)
 
 
@@ -251,6 +253,6 @@ def plot_numerical_variable(
     if export:
         fig.write_html(f"{variable_name+'_'+target_value_described}.html")
     if not export:
-        init_notebook_mode(connected=True)  # initiate notebook for offline plot
+        # initiate notebook for offline plot
+        init_notebook_mode(connected=True)
         iplot(fig)
-
