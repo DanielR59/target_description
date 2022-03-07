@@ -1,5 +1,4 @@
-from optparse import Option
-from typing import Literal, Optional, Union
+from typing import List, Literal, Optional, Union
 import pandas as pd
 from .utils import (
     calculate_bins,
@@ -77,9 +76,9 @@ class targetDescribe:
         self,
         target_value_described: Optional[str] = None,
         export: bool = False,
-        random_state: Optional[int] = None,
         max_categories: Optional[int] = None,
         nbins: Optional[int] = None,
+        random_state: Optional[int] = None,
         nbins_round_2: Optional[dict] = None,
     ):
         if nbins:
@@ -168,7 +167,8 @@ class targetDescribe:
                     )
             for nombre in categorical_columns:
                 if self.categorical_variables[nombre].dtype == "object":
-                    num_categorias = self.categorical_variables[nombre].nunique()
+                    num_categorias = self.categorical_variables[nombre].nunique(
+                    )
                     if num_categorias <= self.max_categories:
 
                         proporcion = calculate_distribution(
@@ -204,6 +204,127 @@ class targetDescribe:
                             target_value_described=self.target_value_described,
                             export=export,
                         )
+
+    def describe_some(self, columns: List[str], target_value_described: Optional[str] = None, export: bool = False, max_categories: Optional[int] = None, nbins: Optional[int] = None, random_state: Optional[int] = None, nbins_round_2: Optional[dict] = None):
+        if nbins:
+            self.nbins = nbins
+        if max_categories:
+            self.max_categories = max_categories
+
+        if target_value_described:
+            self.target_value_described = target_value_described
+
+        if self.problem == "binary_classification":
+            if self.target.nunique() != 2:
+                raise ("Not binary target")
+
+            for nombre in columns:
+                if nombre in self.numeric_variables.columns:
+
+                    if self.numeric_variables[nombre].dtype in ["int64", "int32", "int16"]:
+                        num_categorias = self.numeric_variables[nombre].nunique(
+                        )
+
+                        if num_categorias <= self.max_categories:
+                            proporcion = calculate_distribution(
+                                df=self.numeric_variables,
+                                variable=nombre,
+                                target_name=self._target_name,
+                                target_value_described=self.target_value_described,
+                            )
+
+                            plot_variable(
+                                df=proporcion,
+                                variable_name=nombre,
+                                target_name=self._target_name,
+                                target_value_described=self.target_value_described,
+                                export=export,
+                            )
+                        else:
+
+                            proporcion = sample_and_get_distribution(
+                                df=self.numeric_variables,
+                                variable=nombre,
+                                target_name=self._target_name,
+                                target_value_described=self.target_value_described,
+                                sample_size=self.max_categories,
+                                random_state=random_state,
+                            )
+
+                            plot_variable(
+                                df=proporcion,
+                                variable_name=nombre,
+                                target_name=self._target_name,
+                                target_value_described=self.target_value_described,
+                                export=export,
+                            )
+                    elif self.numeric_variables[nombre].dtype in ["float64", "float32"]:
+                        proporcion, counts, bins = calculate_bins(
+                            df=self.numeric_variables,
+                            variable=nombre,
+                            target_name=self._target_name,
+                            target_value_described=self.target_value_described,
+                            nbins=self.nbins,
+                        )
+
+                        plot_numerical_variable(
+                            get_variable_and_target(
+                                self.numeric_variables, nombre, self._target_name
+                            ),
+                            proporcion,
+                            counts,
+                            bins,
+                            variable_name=nombre,
+                            target_name=self._target_name,
+                            target_value_described=self.target_value_described,
+                            nbins=self.nbins,
+                            nbins_round_2=nbins_round_2,
+                            export=export,
+                        )
+
+                elif nombre in self.categorical_variables.columns:
+
+                    if self.categorical_variables[nombre].dtype == "object":
+                        num_categorias = self.categorical_variables[nombre].nunique(
+                        )
+                        if num_categorias <= self.max_categories:
+
+                            proporcion = calculate_distribution(
+                                df=self.categorical_variables,
+                                variable=nombre,
+                                target_name=self._target_name,
+                                target_value_described=self.target_value_described,
+                            )
+
+                            plot_variable(
+                                df=proporcion,
+                                variable_name=nombre,
+                                target_name=self._target_name,
+                                target_value_described=self.target_value_described,
+                                export=export,
+                            )
+
+                        else:
+
+                            proporcion = sample_and_get_distribution(
+                                df=self.categorical_variables,
+                                variable=nombre,
+                                target_name=self._target_name,
+                                target_value_described=self.target_value_described,
+                                sample_size=self.max_categories,
+                                random_state=random_state,
+                            )
+
+                            plot_variable(
+                                df=proporcion,
+                                variable_name=nombre,
+                                target_name=self._target_name,
+                                target_value_described=self.target_value_described,
+                                export=export,
+                            )
+
+                else:
+                    print(f"{nombre} no esta en el dataframe cainal")
 
 
 if __name__ == "__main__":
