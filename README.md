@@ -28,8 +28,8 @@ td = targetDescribe(df,"Survived", problem="binary_classification")
 td.all_associations()
 ```
 
-![hola](./img/Sex.png)
-![hola2](./img/Pclass.png)
+![hola](https://github.com/DanielR59/target_description/blob/main/img/Sex.png)
+![hola2](https://github.com/DanielR59/target_description/blob/main/img/Pclass.png)
 
 Sin embargo tambien puedes hacer uso de la libreria mediante un script de python exportando directamente los gráficos en html.
 
