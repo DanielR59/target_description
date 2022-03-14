@@ -1,8 +1,9 @@
 from typing import Optional
+from typing_extensions import Literal
+from unicodedata import category
 import pandas as pd
 import numpy as np
 from plotly.offline import init_notebook_mode, iplot
-
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
@@ -16,12 +17,18 @@ def select_numeric(x: pd.DataFrame) -> pd.DataFrame:
 
 def select_categorical_text(x: pd.DataFrame) -> pd.DataFrame:
     x = x.select_dtypes(exclude=[np.number])
+    """
+    Select non numeric columns from a Dataframe
+
+    Returns:
+        pd.DataFrame: DataFrame with just categorical data
+    """
     # print(x)
     return x
 
 
 def calculate_distribution(
-    df: pd.DataFrame, variable: str, target_name: str, target_value_described: str
+    df: pd.DataFrame, variable: str, target_name: str, target_value_described: str, sort_by: Literal["rows", "variable", "target_asc", "target_desc"]
 ) -> pd.DataFrame:
 
     df = get_variable_and_target(df, variable, target_name)
@@ -35,6 +42,16 @@ def calculate_distribution(
     df = df.astype(int).reset_index()
     df["Percentage"] = (df[target_value_described] / df["Total"]) * 100
 
+    if sort_by == "rows":
+        df.sort_values(by="Total", inplace=True, ascending=False)
+    elif sort_by == "variable":
+        df.sort_values(by=variable, inplace=True)
+
+    elif sort_by == "target_asc":
+        df.sort_values(by="Percentage", ascending=True, inplace=True)
+    elif sort_by == "target_desc":
+        df.sort_values(by="Percentage",
+                       ascending=False, inplace=True)
     # x = (
     #     df[df[target_name] == df[target_name].unique()[-1]]
     #     .groupby(variable)[target_name]
@@ -162,6 +179,7 @@ def plot_variable(
         color="#fd3216",
     )
     fig.update_layout(showlegend=False)
+    fig.update_xaxes(categoryorder="array", categoryarray=df[variable_name])
     if export:
         fig.write_html(f"{variable_name+'_'+target_value_described}.html")
 
