@@ -1,4 +1,5 @@
 from typing import List, Literal, Optional, Union
+from numpy import sort
 import pandas as pd
 from .utils import (
     calculate_bins,
@@ -10,10 +11,6 @@ from .utils import (
     plot_variable,
     calculate_distribution,
 )
-
-# Graficas
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
 
 
 class targetDescribe:
@@ -80,6 +77,8 @@ class targetDescribe:
         nbins: Optional[int] = None,
         random_state: Optional[int] = None,
         nbins_round_2: Optional[dict] = None,
+        sort_by: Literal["rows", "variable",
+                         "target_asc", "target_desc"] = "rows"
     ):
         if nbins:
             self.nbins = nbins
@@ -88,6 +87,9 @@ class targetDescribe:
 
         if target_value_described:
             self.target_value_described = target_value_described
+        if sort_by not in ["rows", "variable", "target_asc", "target_desc"]:
+            print("Incorrect sort_by option using default")
+            sort_by = "rows"
 
         if self.problem == "binary_classification":
 
@@ -115,6 +117,7 @@ class targetDescribe:
                             variable=nombre,
                             target_name=self._target_name,
                             target_value_described=self.target_value_described,
+                            sort_by=sort_by
                         )
 
                         plot_variable(
@@ -176,6 +179,7 @@ class targetDescribe:
                             variable=nombre,
                             target_name=self._target_name,
                             target_value_described=self.target_value_described,
+                            sort_by=sort_by
                         )
 
                         plot_variable(
@@ -205,7 +209,7 @@ class targetDescribe:
                             export=export,
                         )
 
-    def describe_some(self, columns: List[str], target_value_described: Optional[str] = None, export: bool = False, max_categories: Optional[int] = None, nbins: Optional[int] = None, random_state: Optional[int] = None, nbins_round_2: Optional[dict] = None):
+    def describe_some(self, columns: List[str], target_value_described: Optional[str] = None, export: bool = False, max_categories: Optional[int] = None, nbins: Optional[int] = None, random_state: Optional[int] = None, nbins_round_2: Optional[dict] = None, sort_by: Literal["rows", "variable", "target_asc", "target_desc"] = "rows"):
         if nbins:
             self.nbins = nbins
         if max_categories:
@@ -213,6 +217,9 @@ class targetDescribe:
 
         if target_value_described:
             self.target_value_described = target_value_described
+        if sort_by not in ["rows", "variable", "target_asc", "target_desc"]:
+            print("Incorrect sort_by option using default")
+            sort_by = "rows"
 
         if self.problem == "binary_classification":
             if self.target.nunique() != 2:
@@ -231,6 +238,7 @@ class targetDescribe:
                                 variable=nombre,
                                 target_name=self._target_name,
                                 target_value_described=self.target_value_described,
+                                sort_by=sort_by
                             )
 
                             plot_variable(
@@ -294,6 +302,8 @@ class targetDescribe:
                                 variable=nombre,
                                 target_name=self._target_name,
                                 target_value_described=self.target_value_described,
+                                sort_by=sort_by
+
                             )
 
                             plot_variable(
